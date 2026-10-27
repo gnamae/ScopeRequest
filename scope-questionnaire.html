@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Construction App Scope Questionnaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,500;100,700;125,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: one narrow column of numbered parts, a sticky progress rail on top, jobsite-sheet feel */
+:root {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --fg: #1d2126;
+  --muted: #5d6570;
+  --line: #d9d4c9;
+  --accent: #d9641a;
+  --accent-ink: #ffffff;
+  --focus: #1f6fb2;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15181c; --surface: #1e2227; --fg: #ecebe6; --muted: #a2a9b2; --line: #343a42;
+    --accent: #f07f33; --accent-ink: #15181c; --focus: #6fb1ea; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15181c; --surface: #1e2227; --fg: #ecebe6; --muted: #a2a9b2; --line: #343a42;
+  --accent: #f07f33; --accent-ink: #15181c; --focus: #6fb1ea; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--body); font-size: 17px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 720px; margin: 0 auto; }
+header.hero { padding-block: 40px 24px; border-bottom: 3px solid var(--fg); }
+.eyebrow { font-family: var(--display); font-stretch: 100%; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; color: var(--muted); margin: 0 0 10px; }
+h1 { font-family: var(--display); font-stretch: 125%; font-weight: 700; font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.05; margin: 0 0 14px; text-wrap: balance; }
+.lede { max-width: 60ch; margin: 0; color: var(--muted); }
+.progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; font-family: var(--display); font-size: .85rem; font-weight: 500; }
+.progress .bar { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.progress .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.progress span { font-variant-numeric: tabular-nums; min-width: 8ch; text-align: right; }
+section.part { padding-block: 36px 8px; border-bottom: 1px solid var(--line); }
+section.part h2 { font-family: var(--display); font-stretch: 125%; font-weight: 700; font-size: 1.35rem; margin: 0 0 6px; line-height: 1.15; text-wrap: balance; }
+section.part .part-no { font-family: var(--display); font-weight: 700; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+section.part .why { color: var(--muted); margin: 0 0 22px; max-width: 62ch; font-size: .97rem; }
+.sub { font-family: var(--display); font-weight: 700; font-size: .95rem; margin: 28px 0 10px; padding-bottom: 4px; border-bottom: 2px solid var(--line); }
+.q { display: grid; gap: 6px; margin: 0 0 20px; }
+.q label, .q .lbl { font-weight: 600; line-height: 1.35; }
+.q .hint { font-size: .9rem; color: var(--muted); margin-top: -2px; }
+input[type=text], input[type=email], input[type=tel], textarea, select {
+  width: 100%; font: inherit; color: var(--fg); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; min-width: 0;
+}
+textarea { min-height: 76px; resize: vertical; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.choices label { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; cursor: pointer; }
+.choices input { accent-color: var(--accent); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 520px) { .two { grid-template-columns: 1fr; } }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+table.matrix { border-collapse: collapse; width: 100%; min-width: 560px; font-size: .95rem; }
+table.matrix th, table.matrix td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.matrix th { font-family: var(--display); font-weight: 700; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+table.matrix tr:last-child td { border-bottom: 0; }
+table.matrix select { padding: 6px 8px; }
+.actions { padding-block: 32px 0; display: grid; gap: 12px; }
+button.submit { font-family: var(--display); font-weight: 700; font-size: 1.05rem; letter-spacing: .02em; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 4px; padding: 14px 22px; cursor: pointer; }
+button.submit:hover { filter: brightness(.95); }
+.fine { color: var(--muted); font-size: .9rem; margin: 0; }
+.err { color: #b3261e; font-size: .9rem; display: none; }
+:root[data-theme="dark"] .err { color: #ff8a80; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .err { color: #ff8a80; } }
+@media (prefers-reduced-motion: reduce) { .progress .bar i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Discovery · Construction planning and execution app</p>
+  <h1>Scope Questionnaire</h1>
+  <p class="lede">About 25 minutes. Answer what you can; skip what doesn't apply. Short, plain answers beat polished ones. Your responses go straight to Gina so the first working session starts with real information instead of guesses.</p>
+</header>
+
+<div class="progress" aria-live="polite">
+  <div class="bar"><i id="bar"></i></div>
+  <span id="count">0 of 0</span>
+</div>
+
+<!-- FormSubmit: first submission sends a one-time activation email to the address below. Confirm it once, then every submission lands in your inbox. -->
+<form id="scope" action="https://formsubmit.co/ginamayhallam@gmail.com" method="POST">
+  <input type="hidden" name="_subject" value="Scope questionnaire: construction app">
+  <input type="hidden" name="_template" value="table">
+  <input type="hidden" name="_captcha" value="false">
+  <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+
+  <section class="part">
+    <p class="part-no">Part 1 of 13</p>
+    <h2>Who you are</h2>
+    <p class="why">So the answers come back with a name on them.</p>
+    <div class="two">
+      <div class="q"><label for="f-name">Your name</label><input id="f-name" type="text" name="01 Name" required></div>
+      <div class="q"><label for="f-company">Company</label><input id="f-company" type="text" name="01 Company" required></div>
+    </div>
+    <div class="two">
+      <div class="q"><label for="f-email">Email</label><input id="f-email" type="email" name="01 Email" required></div>
+      <div class="q"><label for="f-phone">Phone</label><input id="f-phone" type="tel" name="01 Phone"></div>
+    </div>
+    <div class="q"><label for="f-role">Your role in this project</label><input id="f-role" type="text" name="01 Role" placeholder="Owner, operations manager, project executive..."></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 2 of 13</p>
+    <h2>Business context and goals</h2>
+    <p class="why">The goal here is to find the one problem that justifies the budget. Everything else is a nice-to-have until proven otherwise.</p>
+    <div class="q"><span class="lbl">What does your company build?</span>
+      <div class="choices">
+        <label><input type="checkbox" name="02 Type of work" value="Residential">Residential</label>
+        <label><input type="checkbox" name="02 Type of work" value="Commercial">Commercial</label>
+        <label><input type="checkbox" name="02 Type of work" value="Civil / heavy">Civil / heavy</label>
+        <label><input type="checkbox" name="02 Type of work" value="Specialty trade">Specialty trade</label>
+        <label><input type="checkbox" name="02 Type of work" value="General contractor">General contractor</label>
+        <label><input type="checkbox" name="02 Type of work" value="Subcontractor">Subcontractor</label>
+      </div></div>
+    <div class="two">
+      <div class="q"><label for="f-active">How many projects run at once?</label><input id="f-active" type="text" name="02 Active projects at once"></div>
+      <div class="q"><label for="f-size">Typical project size (dollars and months)</label><input id="f-size" type="text" name="02 Typical project size" placeholder="$250k, 4 months"></div>
+    </div>
+    <div class="q"><label for="f-today">How do you plan and run projects today?</label><div class="hint">Spreadsheets, Procore, Buildertrend, CoConstruct, paper, group texts...</div><textarea id="f-today" name="02 Current tools and process"></textarea></div>
+    <div class="q"><label for="f-breaks">What breaks most often? Describe the last three times it cost you money.</label><textarea id="f-breaks" name="02 What breaks and what it cost"></textarea></div>
+    <div class="q"><label for="f-whybuild">Why build instead of buy? What did off-the-shelf tools fail to do?</label><textarea id="f-whybuild" name="02 Why build vs buy"></textarea></div>
+    <div class="q"><label for="f-success">What does success look like 12 months after launch? Give a number if you can.</label><div class="hint">Hours saved per week, rework reduced, margin recovered...</div><textarea id="f-success" name="02 Success in 12 months"></textarea></div>
+    <div class="q"><span class="lbl">Is this an internal tool, a product to sell, or both?</span>
+      <div class="choices">
+        <label><input type="radio" name="02 Internal or product" value="Internal tool">Internal tool</label>
+        <label><input type="radio" name="02 Internal or product" value="Product to sell">Product to sell</label>
+        <label><input type="radio" name="02 Internal or product" value="Both">Both</label>
+      </div></div>
+    <div class="q"><label for="f-sponsor">Who is sponsoring this, and what happens to them if it fails?</label><textarea id="f-sponsor" name="02 Sponsor and stakes"></textarea></div>
+    <div class="q"><label for="f-deadline">Is there a hard deadline driving this?</label><div class="hint">A contract start, a busy season, a lease ending on the old system</div><input id="f-deadline" type="text" name="02 Hard deadline"></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 3 of 13</p>
+    <h2>Users and roles</h2>
+    <p class="why">Field users and office users have opposite needs. Tell me which group is bigger, which is louder, and which one the sponsor listens to.</p>
+    <div class="q"><span class="lbl">Who uses this day to day?</span>
+      <div class="choices">
+        <label><input type="checkbox" name="03 Daily users" value="Owner">Owner</label>
+        <label><input type="checkbox" name="03 Daily users" value="Project manager">Project manager</label>
+        <label><input type="checkbox" name="03 Daily users" value="Estimator">Estimator</label>
+        <label><input type="checkbox" name="03 Daily users" value="Superintendent">Superintendent</label>
+        <label><input type="checkbox" name="03 Daily users" value="Foreman">Foreman</label>
+        <label><input type="checkbox" name="03 Daily users" value="Crew">Crew</label>
+        <label><input type="checkbox" name="03 Daily users" value="Office / admin">Office / admin</label>
+        <label><input type="checkbox" name="03 Daily users" value="Accounting">Accounting</label>
+      </div></div>
+    <div class="q"><label for="f-counts">How many users per role? Total in year one and year three?</label><textarea id="f-counts" name="03 User counts"></textarea></div>
+    <div class="q"><span class="lbl">Does anyone outside the company need their own access?</span>
+      <div class="choices">
+        <label><input type="checkbox" name="03 External access" value="Subcontractors">Subcontractors</label>
+        <label><input type="checkbox" name="03 External access" value="Suppliers">Suppliers</label>
+        <label><input type="checkbox" name="03 External access" value="Architects / engineers">Architects / engineers</label>
+        <label><input type="checkbox" name="03 External access" value="Inspectors">Inspectors</label>
+        <label><input type="checkbox" name="03 External access" value="Owners / clients">Owners / clients</label>
+        <label><input type="checkbox" name="03 External access" value="None">None</label>
+      </div></div>
+    <div class="q"><label for="f-perms">What can each role see, edit, approve, or delete? Who approves a budget change versus a schedule change?</label><textarea id="f-perms" name="03 Permissions by role"></textarea></div>
+    <div class="q"><span class="lbl">What devices does the field carry?</span>
+      <div class="choices">
+        <label><input type="checkbox" name="03 Field devices" value="iPhone">iPhone</label>
+        <label><input type="checkbox" name="03 Field devices" value="Android">Android</label>
+        <label><input type="checkbox" name="03 Field devices" value="iPad">iPad</label>
+        <label><input type="checkbox" name="03 Field devices" value="Rugged tablet">Rugged tablet</label>
+        <label><input type="checkbox" name="03 Field devices" value="Laptop in the truck">Laptop in the truck</label>
+      </div></div>
+    <div class="q"><label for="f-comfort">How tech-comfortable is the crew? What is the oldest phone in use?</label><textarea id="f-comfort" name="03 Crew tech comfort and oldest device"></textarea></div>
+    <div class="q"><label for="f-lang">Language needs on the crew side?</label><input id="f-lang" type="text" name="03 Languages" placeholder="English only, Spanish, other"></div>
+    <div class="q"><label for="f-admin">Who owns setup and training after launch, and who is the internal admin?</label><input id="f-admin" type="text" name="03 Internal admin and trainer"></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 4 of 13</p>
+    <h2>Planning features</h2>
+    <p class="why">Each of these is a product on its own. Mark which ones you already have a tool for and are happy with, so we don't rebuild something that works.</p>
+    <p class="sub">Estimating and bidding</p>
+    <div class="q"><span class="lbl">Do you need estimating inside the app?</span>
+      <div class="choices">
+        <label><input type="radio" name="04 Estimating in app" value="Yes, build it">Yes, build it</label>
+        <label><input type="radio" name="04 Estimating in app" value="No, estimates come from another tool">Comes from another tool</label>
+        <label><input type="radio" name="04 Estimating in app" value="Not sure">Not sure</label>
+      </div></div>
+    <div class="q"><label for="f-costdb">Cost database, assemblies, unit pricing, markup rules by trade: which do you use?</label><textarea id="f-costdb" name="04 Cost database and pricing method"></textarea></div>
+    <div class="q"><label for="f-takeoff">Takeoff from drawings, or a line-item builder?</label><input id="f-takeoff" type="text" name="04 Takeoff vs line items"></div>
+    <div class="q"><label for="f-bids">Do you send bids and proposals from the app? Collect sub quotes? Need e-signature?</label><textarea id="f-bids" name="04 Bids proposals sub quotes esign"></textarea></div>
+    <p class="sub">Scheduling</p>
+    <div class="q"><span class="lbl">What kind of schedule?</span>
+      <div class="choices">
+        <label><input type="checkbox" name="04 Schedule type" value="Gantt with dependencies">Gantt with dependencies</label>
+        <label><input type="checkbox" name="04 Schedule type" value="Critical path">Critical path</label>
+        <label><input type="checkbox" name="04 Schedule type" value="Calendar">Calendar</label>
+        <label><input type="checkbox" name="04 Schedule type" value="Simple task list">Simple task list</label>
+      </div></div>
+    <div class="q"><label for="f-crewsched">Do you schedule crews and equipment, or only phases and milestones?</label><input id="f-crewsched" type="text" name="04 Crews and equipment scheduling"></div>
+    <div class="q"><label for="f-schedchange">How often does the schedule change, and who is allowed to change it?</label><textarea id="f-schedchange" name="04 Schedule change frequency and authority"></textarea></div>
+    <div class="q"><label for="f-baseline">Baseline vs. actual comparison, delay tracking, weather holds, inspection holds, material lead times: which matter?</label><textarea id="f-baseline" name="04 Baseline delays and holds"></textarea></div>
+    <p class="sub">Budgeting and cost control</p>
+    <div class="q"><label for="f-costcodes">Cost codes: CSI MasterFormat, your own, or none?</label><input id="f-costcodes" type="text" name="04 Cost code system"></div>
+    <div class="q"><label for="f-committed">Committed costs (POs, subcontracts) vs. actual costs (invoices, payroll): which do you need to see, and from where?</label><textarea id="f-committed" name="04 Committed vs actual costs"></textarea></div>
+    <div class="q"><label for="f-forecast">Earned value, percent complete, or cost-to-complete forecasting?</label><input id="f-forecast" type="text" name="04 Forecasting method"></div>
+    <div class="q"><label for="f-retainage">How do you handle allowances, contingency, and retainage?</label><textarea id="f-retainage" name="04 Allowances contingency retainage"></textarea></div>
+    <p class="sub">Project setup</p>
+    <div class="q"><label for="f-templates">Project templates by job type? Pre-construction checklist (permits, bonds, insurance certs, lien notices)?</label><textarea id="f-templates" name="04 Templates and precon checklist"></textarea></div>
+    <div class="q"><span class="lbl">Track the pipeline (leads, bids outstanding, win/loss) or only awarded work?</span>
+      <div class="choices">
+        <label><input type="radio" name="04 Pipeline tracking" value="Pipeline too">Pipeline too</label>
+        <label><input type="radio" name="04 Pipeline tracking" value="Awarded work only">Awarded work only</label>
+      </div></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 5 of 13</p>
+    <h2>Execution features</h2>
+    <p class="why">This is where the field crew lives, and where adoption dies if the app is slower than a text message. Tell me what they do today with a phone camera and a group chat; that is the real baseline.</p>
+    <p class="sub">Daily operations</p>
+    <div class="q"><span class="lbl">What goes in a daily log?</span>
+      <div class="choices">
+        <label><input type="checkbox" name="05 Daily log contents" value="Weather">Weather</label>
+        <label><input type="checkbox" name="05 Daily log contents" value="Crew count">Crew count</label>
+        <label><input type="checkbox" name="05 Daily log contents" value="Hours">Hours</label>
+        <label><input type="checkbox" name="05 Daily log contents" value="Work completed">Work completed</label>
+        <label><input type="checkbox" name="05 Daily log contents" value="Deliveries">Deliveries</label>
+        <label><input type="checkbox" name="05 Daily log contents" value="Visitors">Visitors</label>
+        <label><input type="checkbox" name="05 Daily log contents" value="Delays">Delays</label>
+        <label><input type="checkbox" name="05 Daily log contents" value="Photos">Photos</label>
+      </div></div>
+    <div class="q"><label for="f-logwho">Who fills out the daily log, when, and who reads it?</label><input id="f-logwho" type="text" name="05 Daily log owner and reader"></div>
+    <div class="q"><label for="f-time">Time tracking: clock in/out, per-task hours, GPS-stamped, or a daily total? Does it feed payroll?</label><textarea id="f-time" name="05 Time tracking"></textarea></div>
+    <div class="q"><label for="f-tasks">Task and punch list management: assign, photo, due date, sign-off?</label><input id="f-tasks" type="text" name="05 Tasks and punch lists"></div>
+    <div class="q"><label for="f-photos">Photos: tagged to location, task, or drawing pin? Before/after pairs?</label><input id="f-photos" type="text" name="05 Photo tagging"></div>
+    <p class="sub">Quality and safety</p>
+    <div class="q"><label for="f-inspect">Inspections and checklists: your own forms or industry standard? Pass/fail with photos?</label><textarea id="f-inspect" name="05 Inspections and checklists"></textarea></div>
+    <div class="q"><span class="lbl">Safety features needed</span>
+      <div class="choices">
+        <label><input type="checkbox" name="05 Safety features" value="Toolbox talks">Toolbox talks</label>
+        <label><input type="checkbox" name="05 Safety features" value="JHA / JSA">JHA / JSA</label>
+        <label><input type="checkbox" name="05 Safety features" value="Incident reports">Incident reports</label>
+        <label><input type="checkbox" name="05 Safety features" value="Near-miss log">Near-miss log</label>
+        <label><input type="checkbox" name="05 Safety features" value="OSHA 300 log">OSHA 300 log</label>
+        <label><input type="checkbox" name="05 Safety features" value="Certification tracking">Certification tracking</label>
+      </div></div>
+    <div class="q"><label for="f-alerts">Who gets alerted when an inspection or safety item fails?</label><input id="f-alerts" type="text" name="05 Failure alerts go to"></div>
+    <p class="sub">Changes and issues</p>
+    <div class="q"><label for="f-co">Change orders: who requests, who prices, who approves, and how does the client sign?</label><textarea id="f-co" name="05 Change order workflow"></textarea></div>
+    <div class="q"><label for="f-rfi">RFIs and submittals: tracked in the app, by email, or in the architect's tool?</label><input id="f-rfi" type="text" name="05 RFIs and submittals"></div>
+    <div class="q"><span class="lbl">Should an approved change order automatically update the budget and schedule?</span>
+      <div class="choices">
+        <label><input type="radio" name="05 CO auto-updates budget and schedule" value="Yes">Yes</label>
+        <label><input type="radio" name="05 CO auto-updates budget and schedule" value="No">No</label>
+        <label><input type="radio" name="05 CO auto-updates budget and schedule" value="Not sure">Not sure</label>
+      </div></div>
+    <p class="sub">Resources and closeout</p>
+    <div class="q"><label for="f-equip">Equipment tracking (location, hours, maintenance, checkout)? Materials (ordering, deliveries, on-site inventory)?</label><textarea id="f-equip" name="05 Equipment and materials"></textarea></div>
+    <div class="q"><label for="f-dispatch">Crew scheduling and dispatch across multiple jobsites?</label><input id="f-dispatch" type="text" name="05 Dispatch"></div>
+    <div class="q"><label for="f-closeout">Closeout: punch list, as-builts, warranties, O&amp;M manuals, lien releases. What does a finished project hand to the client?</label><textarea id="f-closeout" name="05 Closeout package"></textarea></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 6 of 13</p>
+    <h2>Documents, drawings, and communication</h2>
+    <p class="why">Drawings are the heaviest thing a construction app handles, in file size and in liability. Markup, versioning, and sheet comparison are a major build on their own.</p>
+    <div class="q"><span class="lbl">Drawings</span>
+      <div class="choices">
+        <label><input type="checkbox" name="06 Drawings" value="View only">View only</label>
+        <label><input type="checkbox" name="06 Drawings" value="Markup">Markup</label>
+        <label><input type="checkbox" name="06 Drawings" value="Pin issues to sheets">Pin issues to sheets</label>
+        <label><input type="checkbox" name="06 Drawings" value="Compare revisions">Compare revisions</label>
+      </div></div>
+    <div class="q"><label for="f-formats">Drawing formats in use</label><input id="f-formats" type="text" name="06 Drawing formats" placeholder="PDF, DWG, BIM/IFC"></div>
+    <div class="q"><label for="f-doccontrol">Document control: contracts, permits, insurance certs, specs, submittals. Versioning and approval workflow?</label><textarea id="f-doccontrol" name="06 Document control"></textarea></div>
+    <div class="q"><label for="f-docswhere">Where do documents live today, and do they need to stay there?</label><input id="f-docswhere" type="text" name="06 Document storage today" placeholder="Dropbox, SharePoint, Google Drive, Procore"></div>
+    <div class="q"><span class="lbl">Communication inside the app</span>
+      <div class="choices">
+        <label><input type="checkbox" name="06 Communication" value="In-app messaging">In-app messaging</label>
+        <label><input type="checkbox" name="06 Communication" value="Comments on tasks">Comments on tasks</label>
+        <label><input type="checkbox" name="06 Communication" value="Push notifications">Push notifications</label>
+        <label><input type="checkbox" name="06 Communication" value="Email / SMS notifications">Email / SMS notifications</label>
+      </div></div>
+    <div class="q"><label for="f-portal">Client-facing portal: what does the owner get to see?</label><div class="hint">Progress photos, schedule, invoices, selections</div><textarea id="f-portal" name="06 Client portal contents"></textarea></div>
+    <div class="q"><label for="f-esign">E-signature for contracts, change orders, daily log sign-off? Meeting notes and decision logs?</label><textarea id="f-esign" name="06 Esign and decision logs"></textarea></div>
+    <div class="q"><label for="f-retention">Record retention: how long must project records be kept, and who can delete?</label><input id="f-retention" type="text" name="06 Record retention"></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 7 of 13</p>
+    <h2>Integrations and data</h2>
+    <p class="why">Every integration roughly doubles in cost once you count auth, error handling, and the day the other system changes its API. The must-have list should be two or three.</p>
+    <div class="q"><label for="f-acct">Accounting system, and what should sync</label><div class="hint">QuickBooks, Sage 100/300 CRE, Foundation, Viewpoint, Xero. One-way or two-way? Jobs, cost codes, invoices, payroll?</div><textarea id="f-acct" name="07 Accounting integration"></textarea></div>
+    <div class="q"><label for="f-payroll">Payroll and HR system. Does time tracking feed it directly?</label><input id="f-payroll" type="text" name="07 Payroll system" placeholder="ADP, Gusto, Paychex..."></div>
+    <div class="q"><label for="f-esttools">Estimating, takeoff, or CRM tools to pull from</label><input id="f-esttools" type="text" name="07 Estimating takeoff CRM tools" placeholder="Bluebeam, PlanSwift, STACK, HubSpot..."></div>
+    <div class="q"><span class="lbl">Email, calendar, and sign-on</span>
+      <div class="choices">
+        <label><input type="radio" name="07 Workspace" value="Google Workspace">Google Workspace</label>
+        <label><input type="radio" name="07 Workspace" value="Microsoft 365">Microsoft 365</label>
+        <label><input type="radio" name="07 Workspace" value="Other / mixed">Other / mixed</label>
+      </div></div>
+    <div class="q"><label for="f-payments">Do clients pay invoices through the app? Weather, mapping, or GPS services needed?</label><input id="f-payments" type="text" name="07 Payments and map services"></div>
+    <div class="q"><label for="f-migrate">Existing data to migrate: how many projects, how far back, what format, how clean?</label><textarea id="f-migrate" name="07 Data migration"></textarea></div>
+    <div class="q"><label for="f-bi">Reporting tools you already use that need a feed or export (Power BI, Excel)?</label><input id="f-bi" type="text" name="07 Reporting tool feeds"></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 8 of 13</p>
+    <h2>Platform, offline, and technical constraints</h2>
+    <p class="why">Offline is the question that changes the architecture. A basement with no signal is a normal jobsite, and sync conflicts are where field apps go to die.</p>
+    <div class="q"><span class="lbl">Platform</span>
+      <div class="choices">
+        <label><input type="checkbox" name="08 Platform" value="Native mobile app">Native mobile app</label>
+        <label><input type="checkbox" name="08 Platform" value="Web app">Web app</label>
+        <label><input type="checkbox" name="08 Platform" value="App store distribution required">App store distribution required</label>
+      </div></div>
+    <div class="q"><label for="f-offline">Must it work offline? For which functions?</label><div class="hint">Daily logs and photos usually yes; budgeting usually no</div><textarea id="f-offline" name="08 Offline requirements"></textarea></div>
+    <div class="q"><label for="f-conflict">What should happen when two people edit the same thing offline and both sync?</label><input id="f-conflict" type="text" name="08 Sync conflict rule"></div>
+    <div class="q"><label for="f-volume">Photo and file volume per project: hundreds or tens of thousands? Video?</label><input id="f-volume" type="text" name="08 File volume"></div>
+    <div class="q"><label for="f-hosting">Hosting preference (cloud and which, on-prem, no opinion)? Any data residency rules or IT standards?</label><textarea id="f-hosting" name="08 Hosting and IT standards"></textarea></div>
+    <div class="q"><span class="lbl">Who maintains it after launch?</span>
+      <div class="choices">
+        <label><input type="radio" name="08 Maintenance owner" value="Our team">Our team</label>
+        <label><input type="radio" name="08 Maintenance owner" value="Your team">Your team</label>
+        <label><input type="radio" name="08 Maintenance owner" value="Third party">Third party</label>
+        <label><input type="radio" name="08 Maintenance owner" value="Not decided">Not decided</label>
+      </div></div>
+    <div class="q"><label for="f-uptime">Expected uptime and support hours? What does an outage cost on a workday?</label><input id="f-uptime" type="text" name="08 Uptime and outage cost"></div>
+    <div class="q"><label for="f-print">Accessibility (ADA/WCAG) needs? Printable PDF layouts for inspectors and clients?</label><input id="f-print" type="text" name="08 Accessibility and print"></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 9 of 13</p>
+    <h2>Security, compliance, and access</h2>
+    <p class="why">Federal, healthcare, or school work can add months of compliance. Better to know now.</p>
+    <div class="q"><label for="f-contracts">Any contracts that impose security requirements?</label><input id="f-contracts" type="text" name="09 Contract security requirements" placeholder="Federal, DoD, state, healthcare, education"></div>
+    <div class="q"><label for="f-sensitive">Sensitive data in scope?</label><div class="hint">Employee SSNs or pay rates, client financials, site security details, drone footage</div><textarea id="f-sensitive" name="09 Sensitive data in scope"></textarea></div>
+    <div class="q"><label for="f-rbac">Permissions by project, by company, or both? Can a sub see other subs' data?</label><input id="f-rbac" type="text" name="09 Permission model"></div>
+    <div class="q"><label for="f-audit">Audit trail: who changed what and when, kept how long? Needed for disputes or litigation holds?</label><input id="f-audit" type="text" name="09 Audit trail"></div>
+    <div class="q"><span class="lbl">Access controls</span>
+      <div class="choices">
+        <label><input type="checkbox" name="09 Access controls" value="Multi-factor authentication">Multi-factor auth</label>
+        <label><input type="checkbox" name="09 Access controls" value="Single sign-on">Single sign-on</label>
+        <label><input type="checkbox" name="09 Access controls" value="Company-owned devices">Company-owned devices</label>
+        <label><input type="checkbox" name="09 Access controls" value="Bring your own device">Bring your own device</label>
+        <label><input type="checkbox" name="09 Access controls" value="Remote wipe">Remote wipe</label>
+      </div></div>
+    <div class="q"><label for="f-wage">Prevailing wage, certified payroll, or Davis-Bacon reporting? Lien law deadlines by state?</label><textarea id="f-wage" name="09 Wage and lien compliance"></textarea></div>
+    <div class="q"><label for="f-privacy">Insurance or bonding documentation to track? Privacy obligations for client or worker data?</label><textarea id="f-privacy" name="09 Insurance bonding privacy"></textarea></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 10 of 13</p>
+    <h2>Reporting and analytics</h2>
+    <p class="why">The reports you actually look at today matter more than the ones you wish you had. If you can, send copies of the last three.</p>
+    <div class="q"><label for="f-reports">What reports do you run now, how often, and who reads them?</label><textarea id="f-reports" name="10 Current reports"></textarea></div>
+    <div class="q"><label for="f-five">Which five numbers does the owner want on one screen?</label><textarea id="f-five" name="10 Top five dashboard numbers"></textarea></div>
+    <div class="q"><span class="lbl">Reports needed</span>
+      <div class="choices">
+        <label><input type="checkbox" name="10 Reports needed" value="Portfolio view across projects">Portfolio view</label>
+        <label><input type="checkbox" name="10 Reports needed" value="Job costing / WIP">Job costing / WIP</label>
+        <label><input type="checkbox" name="10 Reports needed" value="Crew productivity">Crew productivity</label>
+        <label><input type="checkbox" name="10 Reports needed" value="Safety and quality metrics">Safety and quality metrics</label>
+        <label><input type="checkbox" name="10 Reports needed" value="Client progress reports">Client progress reports</label>
+      </div></div>
+    <div class="q"><label for="f-export">Export to Excel or PDF for everything, or specific reports only?</label><input id="f-export" type="text" name="10 Export needs"></div>
+    <div class="q"><label for="f-thresholds">Alerts and thresholds</label><div class="hint">Budget over 90 percent, schedule slip over 5 days, missing daily log</div><textarea id="f-thresholds" name="10 Alert thresholds"></textarea></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 11 of 13</p>
+    <h2>Budget, timeline, and engagement</h2>
+    <p class="why">A range is enough. It decides whether we scope a 3-month first release or a 12-month build, and those are very different conversations.</p>
+    <div class="q"><span class="lbl">Budget range for the build</span>
+      <div class="choices">
+        <label><input type="radio" name="11 Build budget range" value="Under $25k">Under $25k</label>
+        <label><input type="radio" name="11 Build budget range" value="$25k to $75k">$25k to $75k</label>
+        <label><input type="radio" name="11 Build budget range" value="$75k to $150k">$75k to $150k</label>
+        <label><input type="radio" name="11 Build budget range" value="$150k to $300k">$150k to $300k</label>
+        <label><input type="radio" name="11 Build budget range" value="Over $300k">Over $300k</label>
+        <label><input type="radio" name="11 Build budget range" value="Not set yet">Not set yet</label>
+      </div></div>
+    <div class="q"><label for="f-opbudget">Year-one budget for hosting, support, and ongoing work</label><input id="f-opbudget" type="text" name="11 Year one operating budget"></div>
+    <div class="q"><span class="lbl">Which would you rather have?</span>
+      <div class="choices">
+        <label><input type="radio" name="11 Speed vs completeness" value="Something small in 3 months">Something small in 3 months</label>
+        <label><input type="radio" name="11 Speed vs completeness" value="Something complete in 12 months">Something complete in 12 months</label>
+      </div></div>
+    <div class="q"><label for="f-dayone">What must be live on day one, and what can wait for a second release?</label><textarea id="f-dayone" name="11 Day one vs later"></textarea></div>
+    <div class="q"><span class="lbl">Engagement model</span>
+      <div class="choices">
+        <label><input type="radio" name="11 Engagement model" value="Fixed scope and price">Fixed scope and price</label>
+        <label><input type="radio" name="11 Engagement model" value="Time and materials">Time and materials</label>
+        <label><input type="radio" name="11 Engagement model" value="Phased with go/no-go after discovery">Phased with go/no-go</label>
+        <label><input type="radio" name="11 Engagement model" value="Open to advice">Open to advice</label>
+      </div></div>
+    <div class="q"><label for="f-poc">Single point of contact, and hours per week they can give this</label><input id="f-poc" type="text" name="11 Point of contact and hours"></div>
+    <div class="q"><label for="f-testers">Who will test before launch, and when are they available?</label><input id="f-testers" type="text" name="11 Testers"></div>
+    <div class="q"><span class="lbl">After launch</span>
+      <div class="choices">
+        <label><input type="radio" name="11 Post-launch support" value="Retainer">Retainer</label>
+        <label><input type="radio" name="11 Post-launch support" value="Hourly as needed">Hourly as needed</label>
+        <label><input type="radio" name="11 Post-launch support" value="Bring it in-house">Bring it in-house</label>
+        <label><input type="radio" name="11 Post-launch support" value="Not sure">Not sure</label>
+      </div></div>
+    <div class="q"><span class="lbl">Do you want source code ownership and a handoff package, or a managed service?</span>
+      <div class="choices">
+        <label><input type="radio" name="11 Ownership" value="Own the code">Own the code</label>
+        <label><input type="radio" name="11 Ownership" value="Managed service">Managed service</label>
+        <label><input type="radio" name="11 Ownership" value="Not sure">Not sure</label>
+      </div></div>
+    <div class="q"><label for="f-vendor">Have you worked with a software vendor before? What went wrong?</label><textarea id="f-vendor" name="11 Prior vendor experience"></textarea></div>
+    <div class="q"><label for="f-procure">Procurement process and how long contract approval takes</label><input id="f-procure" type="text" name="11 Procurement process"></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 12 of 13</p>
+    <h2>Risks, assumptions, and decision makers</h2>
+    <p class="why">These are the questions that predict whether a project stalls after kickoff. Candid answers here save both of us months.</p>
+    <div class="q"><label for="f-deciders">Who signs the contract, who approves the design, and who can kill the project? Are they the same person?</label><textarea id="f-deciders" name="12 Decision makers"></textarea></div>
+    <div class="q"><label for="f-resist">Who in the company will resist this, and why?</label><textarea id="f-resist" name="12 Internal resistance"></textarea></div>
+    <div class="q"><label for="f-adopt">What has to be true internally for this to get adopted?</label><div class="hint">Field buy-in, a champion, a mandate from the top</div><textarea id="f-adopt" name="12 Adoption conditions"></textarea></div>
+    <div class="q"><label for="f-replace">Are you replacing a tool? When does the old contract end, and will both run in parallel?</label><input id="f-replace" type="text" name="12 Tool being replaced"></div>
+    <div class="q"><label for="f-assume">What assumptions are you making about cost or timeline?</label><textarea id="f-assume" name="12 Assumptions"></textarea></div>
+    <div class="q"><label for="f-fallback">What is the plan if the first version does not get used in the field?</label><textarea id="f-fallback" name="12 Plan if field adoption fails"></textarea></div>
+    <div class="q"><label for="f-changes">Pending business changes (merger, new division, new market) that could change the requirements?</label><input id="f-changes" type="text" name="12 Pending business changes"></div>
+    <div class="q"><label for="f-cancel">What would make you cancel this project six months in?</label><textarea id="f-cancel" name="12 Cancel triggers"></textarea></div>
+  </section>
+
+  <section class="part">
+    <p class="part-no">Part 13 of 13</p>
+    <h2>Scope priorities</h2>
+    <p class="why">Rate each capability. Anything marked Must and Day one is the first quote; everything else is the roadmap. Guesses are fine; we will refine these together.</p>
+    <div class="tablewrap">
+      <table class="matrix" id="matrix">
+        <thead><tr><th>Capability</th><th>Have a tool today?</th><th>Priority</th><th>Release</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="q" style="margin-top:22px"><label for="f-anything">Anything I didn't ask that I should have?</label><textarea id="f-anything" name="13 Anything else"></textarea></div>
+  </section>
+
+  <div class="actions">
+    <button class="submit" type="submit">Send my answers</button>
+    <p class="err" id="err">A required field in Part 1 is empty. Scroll up to fix it and send again.</p>
+    <p class="fine">Nothing is saved until you press Send. You can come back later; your browser keeps a local draft on this device.</p>
+  </div>
+</form>
+
+</div>
+<script>
+(function () {
+  var caps = ["Project setup and templates","Estimating and bidding","Scheduling (Gantt, dependencies)","Budget and cost tracking","Daily logs and photos","Time tracking","Tasks and punch lists","Inspections and safety","Change orders and RFIs","Drawings and document control","Client portal","Equipment and materials","Accounting integration","Reporting and dashboards","Offline mode"];
+  var tb = document.querySelector("#matrix tbody");
+  caps.forEach(function (c, i) {
+    var n = String(i + 1).padStart(2, "0");
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + c + "</td>"
+      + "<td><select name=\"13 " + n + " " + c + " - have tool\"><option value=\"\">Pick one</option><option>Yes, keep it</option><option>Yes, replace it</option><option>No</option></select></td>"
+      + "<td><select name=\"13 " + n + " " + c + " - priority\"><option value=\"\">Pick one</option><option>Must</option><option>Should</option><option>Could</option><option>Won't</option></select></td>"
+      + "<td><select name=\"13 " + n + " " + c + " - release\"><option value=\"\">Pick one</option><option>Day one</option><option>Phase 2</option><option>Later</option></select></td>";
+    tb.appendChild(tr);
+  });
+
+  var form = document.getElementById("scope");
+  var fields = Array.prototype.slice.call(form.querySelectorAll("input:not([type=hidden]):not([name=_honey]), textarea, select"));
+  var KEY = "scope-questionnaire-draft";
+
+  function groupsDone() {
+    var seen = {}, done = 0, total = 0;
+    fields.forEach(function (f) {
+      var k = f.name; if (seen[k]) return; seen[k] = true; total++;
+      var v;
+      if (f.type === "checkbox" || f.type === "radio") v = form.querySelector("[name=\"" + k.replace(/"/g, '\\"') + "\"]:checked");
+      else v = f.value.trim();
+      if (v) done++;
+    });
+    return [done, total];
+  }
+  function update() {
+    var d = groupsDone();
+    document.getElementById("bar").style.width = Math.round(100 * d[0] / d[1]) + "%";
+    document.getElementById("count").textContent = d[0] + " of " + d[1];
+  }
+  function save() {
+    try {
+      var data = {};
+      fields.forEach(function (f) {
+        if (f.type === "checkbox" || f.type === "radio") { if (f.checked) (data[f.name] = data[f.name] || []).push(f.value); }
+        else if (f.value) data[f.name] = f.value;
+      });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) {}
+  }
+  function restore() {
+    try {
+      var data = JSON.parse(localStorage.getItem(KEY) || "{}");
+      fields.forEach(function (f) {
+        var v = data[f.name]; if (v == null) return;
+        if (f.type === "checkbox" || f.type === "radio") f.checked = v.indexOf(f.value) > -1;
+        else f.value = v;
+      });
+    } catch (e) {}
+  }
+  restore(); update();
+  form.addEventListener("input", function () { update(); save(); });
+  form.addEventListener("change", function () { update(); save(); });
+  form.addEventListener("submit", function (e) {
+    var ok = form.checkValidity();
+    document.getElementById("err").style.display = ok ? "none" : "block";
+    if (!ok) { e.preventDefault(); form.reportValidity(); return; }
+    try { localStorage.removeItem(KEY); } catch (err) {}
+  });
+})();
+</script>
+</body>
+</html>
